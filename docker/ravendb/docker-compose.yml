@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  ravendb:
+    image: ravendb/ravendb:ubuntu-latest
+    container_name: ravendb
+    environment:
+      RAVEN_Setup_Mode: "None"
+      RAVEN_License_Eula_Accepted: "true"
+    ports:
+      - "8080:8080"
+    volumes:
+      - data:/opt/RavenDB/Server/RavenData
+
+volumes:
+  data:
