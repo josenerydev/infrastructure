@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  mssql:
+    build:
+      context: .
+      dockerfile: setup/mssql.Dockerfile
+    container_name: mssql
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: 'YourStrong!Passw0rd'
+    ports:
+      - '1433:1433'
