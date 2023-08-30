@@ -1,8 +1,8 @@
 # --- Build Stage ---
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build-stage
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-stage
 
 # Instalação do Evolve CLI
-RUN dotnet tool install --global Evolve.Tool --version 2.2.0
+RUN dotnet tool install --global Evolve.Tool
 
 # Adiciona as ferramentas do dotnet ao PATH
 ENV PATH="${PATH}:/root/.dotnet/tools"
