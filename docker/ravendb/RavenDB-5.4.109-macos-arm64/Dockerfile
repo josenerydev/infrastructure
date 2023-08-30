@@ -1,17 +1,25 @@
-# Use the .NET Core SDK image as the base
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+# Primeira etapa: Instalação/Configuração
+FROM mcr.microsoft.com/dotnet/sdk:7.0-bullseye-slim-arm64v8 AS build
 
-# Copy RavenDB files into the Docker container
+# Copie os arquivos do RavenDB para o contêiner
 COPY RavenDB/ /RavenDB
-
-# Set the working directory in the container to /RavenDB
 WORKDIR /RavenDB
 
-# Make all files and subdirectories in /RavenDB executable
+# Torne tudo em /RavenDB executável
 RUN chmod -R +x /RavenDB
 
-# Expose any necessary ports, for example if RavenDB runs on port 8080
+# Execute o script de instalação/configuração
+RUN ./run.sh
+
+# Segunda etapa: Criação da imagem final
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-bullseye-slim-arm64v8
+
+# Copie os binários e qualquer outra coisa necessária da primeira etapa
+COPY --from=build /RavenDB /app
+
+WORKDIR /app
+
 EXPOSE 8080
 
-# Command to run the application
-CMD ["./run.sh"]
+# Execute o RavenDB diretamente
+CMD ["./Raven.Server"]
