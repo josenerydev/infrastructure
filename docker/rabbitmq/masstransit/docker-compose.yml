@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   rabbitmq:
-    image: rabbitmq:3-management
+    image: masstransit/rabbitmq
     container_name: rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=guest
@@ -11,8 +11,8 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+    # volumes:
+    #   - rabbitmq_data:/var/lib/rabbitmq
 
-volumes:
-  rabbitmq_data:
+# volumes:
+#   rabbitmq_data:

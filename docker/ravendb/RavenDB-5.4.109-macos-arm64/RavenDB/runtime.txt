@@ -1,2 +1,0 @@
-.NET Core SDK: 7.0.306
-.NET Core Runtime: 7.0.9
