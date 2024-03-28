@@ -21,9 +21,10 @@ runcmd:
   - systemctl start docker.service
   - systemctl enable docker.service
 
-  # Instalar o Docker Compose
-  - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  - chmod +x /usr/local/bin/docker-compose
+  # Instalar o Docker Compose (v2.26.0 para ARM64)
+  - mkdir -p /usr/local/lib/docker/cli-plugins/
+  - curl -SL "https://github.com/docker/compose/releases/download/v2.26.0/docker-compose-linux-aarch64" -o /usr/local/lib/docker/cli-plugins/docker-compose
+  - chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
   # Adicionar o usuário Jenkins ao grupo Docker
   - usermod -aG docker jenkins
