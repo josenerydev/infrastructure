@@ -1,0 +1,26 @@
+---
+- name: Instalar Docker Engine manualmente no Ubuntu (arm64) 22.04
+  hosts: all
+  become: true
+  vars:
+    docker_deb_files:
+      - { url: "https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/arm64/containerd.io_1.6.28-2_arm64.deb", dest: "/tmp/containerd.io.deb" }
+      - { url: "https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/arm64/docker-ce-cli_26.0.0-1~ubuntu.22.04~jammy_arm64.deb", dest: "/tmp/docker-ce-cli.deb" }
+      - { url: "https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/arm64/docker-ce_26.0.0-1~ubuntu.22.04~jammy_arm64.deb", dest: "/tmp/docker-ce.deb" }
+      - { url: "https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/arm64/docker-buildx-plugin_0.13.1-1~ubuntu.22.04~jammy_arm64.deb", dest: "/tmp/docker-buildx-plugin.deb" }
+      - { url: "https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/arm64/docker-compose-plugin_2.25.0-1~ubuntu.22.04~jammy_arm64.deb", dest: "/tmp/docker-compose-plugin.deb" }
+
+  tasks:
+    - name: Download Docker .deb packages
+      get_url:
+        url: "{{ item.url }}"
+        dest: "{{ item.dest }}"
+      loop: "{{ docker_deb_files }}"
+
+    - name: Install Docker .deb packages
+      apt:
+        deb: "{{ item.dest }}"
+      loop: "{{ docker_deb_files }}"
+
+    - name: Verify Docker installation
+      command: docker run hello-world

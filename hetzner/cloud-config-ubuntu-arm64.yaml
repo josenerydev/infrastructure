@@ -39,3 +39,4 @@ runcmd:
 
   # Reiniciar o serviço Jenkins
   - systemctl restart jenkins
+  - reboot
