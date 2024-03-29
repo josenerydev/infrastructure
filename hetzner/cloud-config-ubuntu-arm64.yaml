@@ -3,30 +3,38 @@
 package_update: true
 
 packages:
+  - ca-certificates
   - curl
-  - apt-transport-https
-  - docker.io
+  - gnupg
+  - lsb-release
   - mc
   - openjdk-17-jre
   - git
   - htop
 
 runcmd:
-  # Configurar o repositório e instalar o Jenkins
-  - wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -
-  - sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
-  - apt-get update && apt-get install jenkins -y
+  # Adicionar chave GPG oficial do Docker e repositório
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  - echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+  # Atualizar lista de pacotes e instalar Docker Engine
+  - apt-get update
+  - apt-get install -y docker-ce docker-ce-cli containerd.io
 
   # Iniciar e habilitar o serviço Docker
   - systemctl start docker.service
   - systemctl enable docker.service
 
-  # Instalar o Docker Compose (v2.26.0 para ARM64)
-  - mkdir -p /usr/local/lib/docker/cli-plugins/
-  - curl -SL "https://github.com/docker/compose/releases/download/v2.26.0/docker-compose-linux-aarch64" -o /usr/local/lib/docker/cli-plugins/docker-compose
-  - chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+  # Adicionar o usuário 'root' ao grupo Docker
+  - usermod -aG docker $USER
 
-  # Adicionar o usuário Jenkins ao grupo Docker
+  # Configurar o repositório e instalar o Jenkins
+  - wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -
+  - sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+  - apt-get update
+  - apt-get install -y jenkins
+
+  # Adicionar o usuário 'jenkins' ao grupo Docker
   - usermod -aG docker jenkins
 
   # Reiniciar o serviço Jenkins
