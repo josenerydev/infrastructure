@@ -7,5 +7,7 @@ services:
     volumes:
       - ../.ssh:/root/.ssh
       - .:/ansible
+    env_file:
+      - .env
     working_dir: /ansible
-    command: /bin/bash -c "chmod 600 /root/.ssh/id_ed25519 && sleep infinity"
+    command: /bin/bash -c "/entrypoint.sh && sleep infinity"
