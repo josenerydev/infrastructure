@@ -2,8 +2,13 @@ docker-compose up -d
 docker-compose up -d --build
 
 docker-compose exec ansible bash
+dc exec ansible bash
 
 ansible-playbook -i inventory.ini install_docker_compose.yml
+ansible-playbook -i inventory.ini install_jenkins.yml
+ansible-playbook -i inventory.ini check_services_status.yml
+
+ansible-playbook -i inventory.ini install_docker_compose.yml install_jenkins.yml check_services_status.yml
 
 ```
 ansible/
