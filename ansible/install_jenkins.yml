@@ -4,6 +4,26 @@
   become: yes
 
   tasks:
+    - name: Atualizar o cache do APT
+      apt:
+        update_cache: yes
+
+    - name: Instalar fontconfig e OpenJDK 17 JRE
+      ansible.builtin.apt:
+        name:
+          - fontconfig
+          - openjdk-17-jre
+        state: present
+
+    - name: Verificar versão do Java
+      ansible.builtin.command: java -version
+      register: java_version
+      changed_when: false
+
+    - name: Exibir versão do Java
+      ansible.builtin.debug:
+        msg: "{{ java_version.stderr_lines }}"
+
     - name: Baixar e adicionar a chave GPG do repositório do Jenkins
       ansible.builtin.get_url:
         url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
@@ -13,14 +33,15 @@
       ansible.builtin.copy:
         content: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
         dest: /etc/apt/sources.list.d/jenkins.list
-      notify: Update APT cache
 
     - name: Instalar o Jenkins
-      apt:
+      ansible.builtin.apt:
         name: jenkins
         state: present
         update_cache: yes
 
-  handlers:
-    - name: Update APT cache
-      ansible.builtin.command: "apt-get update"
+    - name: Permitir o tráfego na porta 8080 (Firewall UFW)
+      ansible.builtin.ufw:
+        rule: allow
+        port: "8080"
+        proto: tcp
