@@ -1,0 +1,27 @@
+---
+- name: Verificar status dos serviços e versão do Docker Compose
+  hosts: all
+  become: yes
+  tasks:
+    - name: Verificar se Jenkins está ativo
+      command: systemctl is-active jenkins
+      register: jenkins_status
+      failed_when: false # Não falha a tarefa, independente do resultado
+
+    - name: Verificar se Docker está ativo
+      command: systemctl is-active docker
+      register: docker_status
+      failed_when: false
+
+    - name: Obter versão do Docker Compose
+      command: docker-compose --version
+      register: docker_compose_version
+      failed_when: false
+
+    - name: Exibir resumo final
+      debug:
+        msg: |
+          Resumo Final:
+          Jenkins status: {{ jenkins_status.stdout }}
+          Docker status: {{ docker_status.stdout }}
+          Docker Compose version: {{ docker_compose_version.stdout | default('Docker Compose não instalado') }}
