@@ -1,0 +1,26 @@
+---
+- name: Instalar Jenkins no Ubuntu 22.04
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Baixar e adicionar a chave GPG do repositório do Jenkins
+      ansible.builtin.get_url:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        dest: /usr/share/keyrings/jenkins-keyring.asc
+
+    - name: Adicionar o repositório do Jenkins
+      ansible.builtin.copy:
+        content: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        dest: /etc/apt/sources.list.d/jenkins.list
+      notify: Update APT cache
+
+    - name: Instalar o Jenkins
+      apt:
+        name: jenkins
+        state: present
+        update_cache: yes
+
+  handlers:
+    - name: Update APT cache
+      ansible.builtin.command: "apt-get update"
